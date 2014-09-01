@@ -1,0 +1,16 @@
+# See https://atom.io/docs/latest/creating-a-package#menus for more details
+'context-menu':
+  '.overlayer':
+      'Enable language-systemverilog': 'language-systemverilog:toggle'
+
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'language-systemverilog'
+      'submenu': [
+        { 'label': 'Toggle', 'command': 'language-systemverilog:toggle' }
+      ]
+    ]
+  }
+]

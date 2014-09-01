@@ -1,0 +1,583 @@
+"name": "SystemVerilog",
+"scopeName": "source.sv",
+"fileTypes": [
+    "v",
+    "sv",
+    "svh"
+],
+"patterns": [
+    { "include": "#topblock" },
+    { "include": "#block_end" },
+    { "include": "#class" },
+    { "include": "#class_extends" },
+    { "include": "#task" },
+    { "include": "#function" },
+    { "include": "#struct_union" },
+    { "include": "#enum" },
+    { "include": "#variable_decl" },
+    { "include": "#language" }
+],
+"repository": {
+    "language": {
+        "patterns": [
+            { "include": "#comments" },
+            { "include": "#numbers" },
+            { "include": "#string" },
+            { "include": "#compiler_directives" },
+            { "include": "#keyword_language" },
+            { "include": "#keyword_direction" },
+            { "include": "#keyword_types" },
+            { "include": "#keyword_parameter" },
+            { "include": "#keyword_modifier" },
+            { "include": "#keyword_flow" },
+            { "include": "#keyword_process" },
+            { "include": "#keyword_constraint" },
+            { "include": "#keyword_assertion" },
+            { "include": "#keyword_coverage" },
+            { "include": "#keyword_specify" },
+            { "include": "#keyword_gate" },
+            { "include": "#keyword_library" },
+            { "include": "#keyword_others" },
+            { "include": "#keyword_operator" },
+            { "include": "#keyword_brace" },
+            { "include": "#system_tf_identifier" },
+            { "include": "#uvm_support" }
+        ]
+    },
+    "comments": {
+        "patterns": [
+            {
+                "name": "comment.line.double-slash.sv",
+                "match": "(//).*?($\\n?)",
+                "captures": {
+                    "1": {
+                        "name": "punctuation.definition.comment.sv"
+                    }
+                }
+            },
+            {
+                "name": "comment.block.sv",
+                "begin": "/\\*",
+                "end": "\\*/",
+                "captures": {
+                    "0": {"name": "punctuation.definition.comment.sv"}
+                }
+            }
+        ]
+    },
+    "numbers": {
+        "patterns": [
+            {
+                "name": "constant.numeric.withbase.sv",
+                "match": "(?i)('s?[bodh]\\s*[0-9a-fzx_]+)\\b"
+            },
+            {
+                "name": "constant.numeric.real.sv",
+                "match": "(?<!\\w)[-+]?(?<!\\.)\\b[0-9_]*\\.?[0-9_]+(?:[eE][-+]?[0-9_]+)?\\b"
+            },
+            {
+                "name": "constant.numeric.unbased_unsized.sv",
+                "match": "(?i)'[01xz]+\\b"
+            },
+            {
+                "name": "constant.numeric.time.sv",
+                "match": "\\b(?<!\\.)[0-9_]*\\.?[0-9_]+?(s|ms|us|ns|ps|fs)\\b"
+            },
+            {
+                "name": "constant.numeric.decimal.sv",
+                "match": "\\b\\d+\\b"
+            }
+        ]
+    },
+    "string": {
+        "name": "string.quoted.double.sv",
+        "begin": "\"",
+        "beginCaptures": {
+            "0": {"name": "punctuation.definition.string.begin.sv"}
+        },
+        "end": "\"",
+        "endCaptures": {
+            "0": {"name": "punctuation.definition.string.end.c"}
+        },
+        "patterns": [
+            { "include": "#string_escaped_char" },
+            { "include": "#string_placeholder" }
+        ]
+    },
+    "string_escaped_char": {
+        "name": "constant.character.escape.sv",
+        "match": "\\\\([ntvfa\"\\\\]|[0-3][0-7]{0,2}|x[a-fA-F0-9]{1,2})"
+    },
+    "string_placeholder": {
+        "patterns": [
+            {
+                "name": "constant.other.placeholder.sv",
+                "match": "(?i)%\\d*[bcdefghlmopstuvxz]"
+            },
+            {
+                "name": "invalid.illegal.placeholder.c",
+                "match": "%"
+            }
+        ]
+    },
+    "compiler_directives": {
+        "patterns": [
+            {
+                "name": "meta.preprocessor.include.sv",
+                "begin": "^\\s*(`include)\\b\\s+",
+                "end": "(?=(?://|/\\*))|$",
+                "captures": {
+                    "1": { "name": "keyword.control.include.sv" }
+                },
+                "patterns": [
+                    {
+                        "name": "punctuation.separator.continuation.sv",
+                        "match": "(?>\\\\\\s*\\n)"
+                    },
+                    {
+                        "name": "string.quoted.double.include.sv",
+                        "begin": "\"",
+                        "end": "\"",
+                        "beginCaptures": {
+                            "0": { "name": "punctuation.definition.string.begin.sv"}
+                        },
+                        "endCaptures": {
+                            "0": { "name": "punctuation.definition.string.end.sv" }
+                        }
+                    },
+                    {
+                        "name": "string.quoted.other.lt-gt.include.sv",
+                        "begin": "<",
+                        "end": ">",
+                        "beginCaptures": {
+                            "0": { "name": "punctuation.definition.string.begin.sv"}
+                        },
+                        "endCaptures": {
+                            "0": { "name": "punctuation.definition.string.end.sv" }
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "meta.preprocessor.macro.withname.sv",
+                "match": "`(define|undef|ifdef|ifndef|elsif|pragma)(?:\\s+([a-zA-Z_\\$][\\w\\$_]*))?",
+                "captures": {
+                    "0": { "name": "keyword.control.define.sv" },
+                    "2": { "name": "entity.name.function.preprocessor.sv" }
+                }
+            },
+            {
+                "name": "meta.preprocessor.macro.noname.sv",
+                "match": "`(__FILE__|__LINE__|begin_keywords|celldefine|end_keywords|endcelldefine|default_nettype|else|endif|line|resetall|timescale|nounconnected_drive|unconnected_drive|undefineall)",
+                "captures": {
+                    "0": { "name": "keyword.control.define.sv" }
+                }
+            },
+            {
+                "name": "meta.preprocessor.macro.sv",
+                "match": "`([a-zA-Z_\\$][\\w\\$_]*)",
+                "captures": {
+                    "0": { "name": "entity.name.function.preprocessor.sv" }
+                }
+            },
+            {
+                "name": "meta.preprocessor.macro.sv",
+                "match": "`([a-zA-Z_\\$][\\w\\$_]*)",
+                "captures": {
+                    "0": { "name": "entity.name.function.preprocessor.sv" }
+                }
+            }
+        ]
+    },
+    "keyword_language": {
+        "patterns": [
+            {
+                "name": "variable.language.sv",
+                "match": "\\b(new|this|super|null)\\b"
+            },
+            {
+                "name": "constant.language.sv",
+                "match": "\\b(supply0|strong0|pull0|weak0|highz0|supply1|strong1|pull1|weak1|highz1|small|medium|large)\\b"
+            }
+        ]
+    },
+    "keyword_types": {
+        "patterns": [
+            {
+                "name": "support.type.integer_atom.sv",
+                "match": "\\b(byte|shortint|int|longint|integer|time)\\b"
+            },
+            {
+                "name": "support.type.integer_vector.sv",
+                "match": "\\b(bit|logic|reg)\\b"
+            },
+            {
+                "name": "support.type.non_integer.sv",
+                "match": "\\b(shortreal|real|realtime|string|chandle|event|void)\\b"
+            },
+            {
+                "name": "support.type.net_type.sv",
+                "match": "\\b(supply0|supply1|tri|triand|trior|trireg|tri0|tri1|uwire|wire|wand|wor)\\b"
+            },
+            {
+                "name": "support.type.net_type.sv",
+                "match": "\\b(supply0|supply1|tri|triand|trior|trireg|tri0|tri1|uwire|wire|wand|wor)\\b"
+            }
+        ]
+    },
+    "keyword_parameter": {
+        "name": "keyword.control.sv",
+        "match": "\\b(localparam|parameter|specparam|defparam|type)\\b"
+    },
+    "keyword_direction": {
+        "name": "storage.modifier.direction.sv",
+        "match": "\\b(input|output|inout|ref)\\b"
+    },
+    "keyword_modifier": {
+        "name": "storage.modifier.sv",
+        "match": "\\b(signed|unsigned|static|automatic|const|default|virtual|context|pure|extern|packed|tagged|protected|local|vectored|scalared|unique|priority|posedge|negedge)\\b"
+    },
+    "keyword_flow": {
+        "name": "keyword.control.flow.sv",
+        "match": "\\b(if|else|do|while|for|foreach|forever|repeat|return|break|continue|final|case|casez|casex|inside|endcase|matches)\\b"
+    },
+    "keyword_process": {
+        "name": "keyword.control.process.sv",
+        "match": "\\b(always|always_comb|always_latch|always_ff|assign|deassign|force|release|begin|end|initial|fork|join|join_none|join_any|wait|disable)\\b"
+    },
+    "keyword_constraint": {
+        "name": "keyword.control.constraint.sv",
+        "match": "\\b(rand|randc|constraint|solve|before|dist|inside|with|randcase|randsequence)\\b"
+    },
+    "keyword_assertion": {
+        "name": "keyword.control.assertion.sv",
+        "match": "\\b(assert|assume|cover|expect|intersect|first_match|throughout|within|and|or|property|endproperty)\\b"
+    },
+    "keyword_coverage": {
+        "name": "keyword.control.coverage.sv",
+        "match": "\\b(covergroup|endgroup|cross|coverpoint|wildcard|bins|illegal_bins|ignore_bins|binsof)\\b"
+    },
+    "keyword_specify": {
+        "name": "keyword.control.specify.sv",
+        "match": "\\b(specify|endspecify|pulsestyle_onevent|pulsestyle_ondetect|showcancelled|noshowcancelled)\\b"
+    },
+    "keyword_gate": {
+        "name": "keyword.control.gate.sv",
+        "match": "\\b(pulldown|pullup|cmos|rcmos|bufif0|bufif1|notif0|notif1|nmos|pmos|rnmos|rpmos|and|nand|or|nor|xor|xnor|buf|not|tranif0|tranif1|rtranif1|rtranif0|tran|rtran)\\b"
+    },
+    "keyword_library": {
+        "name": "keyword.control.library.sv",
+        "match": "\\b(library|incdir|import|export)\\b"
+    },
+    "keyword_others": {
+        "name": "keyword.control.others.sv",
+        "match": "\\b(var|alias|bind|typedef|genvar|generate|endgenerate|edge|wait_order|design|instance|cell|liblist|use|table|timeunit|timeprecision|modport|forkjoin|iff|sequence|endsequence|interface)\\b"
+    },
+    "keyword_operator": {
+        "name": "keyword.operator.sv",
+        "match": "[\\+\\-\\*/%=\\|&^~!:?<>]"
+    },
+    "keyword_brace": {
+        "name": "keyword.brace.sv",
+        "match": "[\\(\\)\\[\\]{}]"
+    },
+    "system_tf_identifier": {
+        "name": "support.function.sv",
+        "match": "\\$[\\w\\$_]+"
+    },
+    "topblock": {
+        "patterns": [
+            {
+                "name": "meta.topblock.sv",
+                "begin": "^\\s*\\b(module|macromodule|program|interface|checker|primitive|package|config|clocking)\\s+(static\\s+|automatic\\s+)?([a-zA-Z_][\\w\\$_]*)",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.topblock.sv"},
+                    "2": {"name": "storage.modifier.lifetime.sv"},
+                    "3": {"name": "entity.name.class.topblock.sv"}
+                },
+                "end": ";",
+                "contentName": "meta.topblock.arguments.sv",
+                "patterns": [
+                    { "include": "#comments" },
+                    { "include": "#para_list_def" },
+                    { "include": "#port_list_def" }
+                ]
+            }
+        ]
+    },
+    "para_list_def": {
+        "patterns": [
+            {
+                "begin": "#\\s*(\\()",
+                "beginCaptures": {
+                    "1": {"name": "punctuation.definition.parameters.begin.sv"}
+                },
+                "end": "(\\))(?=\\s*\\(|\\s*$\\n|\\s*extends|\\s*;)",
+                "endCaptures": {
+                    "1": {"name": "punctuation.definition.parameters.end.sv"}
+                },
+                "contentName": "meta.class.parameters.sv",
+                "patterns": [
+                    { "include": "#language" },
+                    {
+                        "name": "variable.parameter.sv",
+                        "match": "[a-zA-Z_][\\w\\$_]*(?=\\s*[=,\\)\\n])"
+                    }
+                ]
+            }
+        ]
+    },
+    "port_list_def": {
+        "patterns": [
+            {
+                "begin": "(?!#)\\s*(\\()",
+                "beginCaptures": {
+                    "1": {"name": "punctuation.definition.ports.begin.sv"}
+                },
+                "end": "(\\)(?=\\s*;|\\s*$\\n))",
+                "endCaptures": {
+                    "1": {"name": "punctuation.definition.ports.end.sv"}
+                },
+                "contentName": "meta.class.ports.sv",
+                "patterns": [
+                    { "include": "#language" },
+                    { "include": "#variable_decl" }
+                ]
+            }
+        ]
+    },
+    "block_end": {
+        "captures": {
+            "1": {"name": "keyword.control.block_end.sv"},
+            "2": {"name": "entity.name.function.sv"}
+        },
+        "match": "\\b(endfunction|endtask|endmodule|endmacromodule|endinterface|endprogram|endpackage|endclass|endclocking|endconfig|endchecker|endprimitive|endtable)\\b(?:\\s*:\\s*([a-zA-Z_]\\w*))?"
+    },
+    "class": {
+        "patterns": [
+            {
+                "name": "meta.class.sv",
+                "match": "\\b(class)\\s+(static\\s+|automatic\\s+)?([a-zA-Z_][\\w\\$_]*)",
+                "captures": {
+                    "1": {"name": "keyword.control.class.sv"},
+                    "2": {"name": "storage.modifier.lifetime.sv"},
+                    "3": {"name": "entity.name.class.sv"}
+                }
+            }
+        ]
+    },
+    "class_extends": {
+        "patterns": [
+            {
+                "begin": "(extends)\\s+([a-zA-Z_][\\w\\$_]*)",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.sv"},
+                    "2": {"name": "entity.other.inherited-class"}
+                },
+                "end": ";"
+            }
+        ]
+    },
+    "function": {
+        "patterns": [
+             {
+                "name": "meta.function.sv",
+                "begin": "(?m)\\b(function\\s+)(automatic\\s+|static\\s+)?(?!//)((?:.(?!//|/\\*))*?)([a-zA-Z_][\\w_\\[\\]:]+)(?=\\s*[\\(|\\n|;])",
+                "end":";",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.sv"},
+                    "2": {"name": "storage.modifier.sv"},
+                    "3": {"name": "storage.type.sv"},
+                    "4": {"name": "entity.name.function.sv"}
+                },
+                "patterns": [
+                    {
+                        "begin": "(\\()",
+                        "beginCaptures": {
+                            "1": {"name": "punctuation.definition.parameters.begin.sv"}
+                        },
+                        "contentName": "meta.function.parameters.sv",
+                        "end": "(?=\\)\\s*;)",
+                        "patterns": [
+                            { "include": "#language" },
+                            {
+                                "name": "variable.parameter.sv",
+                                "match": "[a-zA-Z_][\\w\\$_]*(?=\\s*[=,\\)\\n])"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "task": {
+        "patterns": [
+            {
+                "name": "meta.task.sv",
+                "begin": "\\b(task\\s+)(automatic\\s+|static\\s+)?([a-zA-Z_][\\w_\\[\\]:]+)(?=\\s*[\\(|\\n|;])",
+                "end": ";",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.sv"},
+                    "2": {"name": "storage.modifier.sv"},
+                    "3": {"name": "entity.name.function.sv"}
+                },
+                "patterns": [
+                    {
+                        "begin": "(\\()",
+                        "beginCaptures": {
+                            "1": {"name": "punctuation.definition.parameters.begin.sv"}
+                        },
+                        "contentName": "meta.task.parameters.sv",
+                        "end": "(?=\\)\\s*;)",
+                        "patterns": [
+                            { "include": "#language" },
+                            {
+                                "name": "variable.parameter.sv",
+                                "match": "[a-zA-Z_][\\w\\$_]*(?=\\s*[=,\\)\\n])"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "struct_union": {
+        "patterns": [
+            {
+                "begin": "\\b(typedef)\\s+(struct|union)(\\s+tagged)?(\\s+packed(\\s+signed|\\s+unsigned)?)?\\s*[\\{|\\n]",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.sv"},
+                    "2": {"name": "keyword.control.sv"},
+                    "3": {"name": "storage.modifier.sv"},
+                    "4": {"name": "storage.modifier.sv"},
+                    "5": {"name": "storage.modifier.sv"}
+                },
+                "end": "(?<=\\})\\s*([_a-zA-Z][\\w_]*)\\s*(?=;)",
+                "endCaptures": {
+                    "1": {"name": "support.type.sv"}
+                },
+                "patterns": [
+                    { "include": "$self" }
+                ]
+            },
+            {
+                "begin": "\\b(struct|union)(\\s+tagged)?(\\s+packed(\\s+signed|\\s+unsigned)?)?\\s*[\\{|\\n]",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.sv"},
+                    "2": {"name": "storage.modifier.sv"},
+                    "3": {"name": "storage.modifier.sv"},
+                    "4": {"name": "storage.modifier.sv"}
+                },
+                "end": "(?<=\\})\\s*((?:(?:[_a-zA-Z][\\w_]*)(?:\\s*,\\s*)?)+)\\s*(?=;)",
+                "endCaptures": {
+                    "1": {"name": "variable.parameter.struct_union.sv"}
+                },
+                "patterns": [
+                    { "include": "$self" }
+                ]
+            }
+        ]
+    },
+    "enum": {
+        "patterns": [
+            {
+                "begin": "(typedef)\\s+(enum)\\s+(.*?)\\s*(?=[\\{|\n])",
+                "end": "(?<=\\})\\s*([a-zA-Z_][\\w_]*)\\s*;",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.sv"},
+                    "2": {"name": "keyword.control.sv"},
+                    "3": {"name": "storage.type.sv"}
+                },
+                "endCaptures": {
+                    "1": {"name": "support.type.sv"}
+                }
+            },
+            {
+                "begin": "\\b(enum)\\s+(.*?)\\s*(?=[\\{|\n])",
+                "end": "(?<=\\})\\s*((?:[a-zA-Z_][\\w_]*\\s*,?\\s*)+)?;",
+                "beginCaptures": {
+                    "1": {"name": "keyword.control.sv"},
+                    "2": {"name": "storage.type.sv"}
+                },
+                "endCaptures": {
+                    "1": {"name": "variable.parameter.enum.sv"}
+                }
+            }
+        ]
+    },
+    "variable_decl": {
+        "patterns": [
+            {
+                "name": "meta.variable_decl.sv",
+                "begin": "(?=\\b(input|output|inout|ref|byte|shortint|int|longint|integer|time|bit|logic|reg|shortreal|real|realtime|string|chandle|event|void|supply0|supply1|tri|triand|trior|trireg|tri0|tri1|uwire|wire|wand|wor|supply0|supply1|tri|triand|trior|trireg|tri0|tri1|uwire|wire|wand|wor)\\b)",
+                "end": "(?=;)",
+                "patterns": [
+                    { "include": "#language" },
+                    {
+                        "match": "([a-zA-Z\\$_][\\w\\$_]*)\\s*(?=[=,;/\\[\\n]|\\)\\s*;)",
+                        "captures": {
+                            "1": { "name": "variable.parameter.sv" }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "uvm_support": {
+        "patterns": [
+            { "include": "#uvm_class" },
+            { "include": "#uvm_method" },
+            { "include": "#uvm_type" },
+            { "include": "#uvm_constant" }
+        ]
+    },
+    "uvm_class": {
+        "patterns": [
+            {
+                "name": "support.class.uvm.sv",
+                "match": "\\b(uvm_barrier|uvm_bogus_class|uvm_bottomup_phase|uvm_typeid_base|uvm_typeid|uvm_callbacks_base|uvm_typed_callbacks|uvm_callbacks|uvm_derived_callbacks|uvm_callback_iter|uvm_callback|uvm_cmd_line_verb|uvm_cmdline_processor|uvm_build_phase|uvm_connect_phase|uvm_end_of_elaboration_phase|uvm_start_of_simulation_phase|uvm_run_phase|uvm_extract_phase|uvm_check_phase|uvm_report_phase|uvm_final_phase|uvm_comparer|uvm_component|uvm_config_object_wrapper|m_uvm_waiter|uvm_config_db|uvm_config_db_options|uvm_coreservice_t|uvm_default_coreservice_t|uvm_domain|uvm_event_base|uvm_event|uvm_event_callback|uvm_factory_queue_class|uvm_factory|uvm_default_factory|uvm_object_wrapper|uvm_factory_override|uvm_enum_wrapper|uvm_heartbeat|uvm_heartbeat_callback|uvm_link_base|uvm_parent_child_link|uvm_cause_effect_link|uvm_related_link|uvm_void|uvm_scope_stack|uvm_status_container|uvm_seed_map|uvm_utils|process_container_c|uvm_object|uvm_objection_events|uvm_objection|uvm_test_done_objection|uvm_objection_context_object|uvm_objection_callback|uvm_packer|uvm_phase|uvm_phase_state_change|uvm_phase_cb|uvm_pool|uvm_object_string_pool|uvm_port_component_base|uvm_port_component|uvm_port_base|uvm_printer|uvm_table_printer|uvm_tree_printer|uvm_line_printer|uvm_printer_knobs|uvm_queue|uvm_recorder|uvm_text_recorder|uvm_component_registry|uvm_object_registry|sev_id_struct|uvm_report_catcher|uvm_report_handler|uvm_report_message_element_base|uvm_report_message_int_element|uvm_report_message_string_element|uvm_report_message_object_element|uvm_report_message_element_container|uvm_report_message|uvm_report_object|uvm_report_server|uvm_default_report_server|uvm_resource_types|uvm_resource_options|uvm_resource_base|get_t|uvm_resource_pool|uvm_resource|uvm_resource_db|uvm_resource_db_options|uvm_int_rsrc|uvm_string_rsrc|uvm_obj_rsrc|uvm_bit_rsrc|uvm_byte_rsrc|uvm_root|uvm_pre_reset_phase|uvm_reset_phase|uvm_post_reset_phase|uvm_pre_configure_phase|uvm_configure_phase|uvm_post_configure_phase|uvm_pre_main_phase|uvm_main_phase|uvm_post_main_phase|uvm_pre_shutdown_phase|uvm_shutdown_phase|uvm_post_shutdown_phase|uvm_spell_chkr|uvm_task_phase|uvm_topdown_phase|uvm_transaction|uvm_visitor|uvm_structure_proxy|uvm_visitor_adapter|uvm_top_down_visitor_adapter|uvm_bottom_up_visitor_adapter|uvm_by_level_visitor_adapter|uvm_component_proxy|uvm_component_name_check_visitor|uvm_tr_database|uvm_text_tr_database|m_uvm_tr_stream_cfg|uvm_tr_stream|uvm_text_tr_stream|uvm_agent|uvm_algorithmic_comparator|uvm_driver|uvm_env|uvm_in_order_comparator|uvm_in_order_built_in_comparator|uvm_in_order_class_comparator|uvm_monitor|uvm_class_pair|uvm_built_in_pair|uvm_built_in_comp|uvm_built_in_converter|uvm_built_in_clone|uvm_class_comp|uvm_class_converter|uvm_class_clone|uvm_push_driver|uvm_random_stimulus|uvm_scoreboard|uvm_subscriber|uvm_test|uvm_get_to_lock_dap|uvm_set_before_get_dap|uvm_set_get_dap_base|uvm_simple_lock_dap|m_uvm_resource_converter|m_uvm_resource_default_converter|m_uvm_resource_convert2string_converter|m_uvm_resource_sprint_converter|m_uvm_resource_default_converters|uvm_mem_single_access_seq|uvm_mem_access_seq|uvm_mem_single_walk_seq|uvm_mem_walk_seq|uvm_reg_single_access_seq|uvm_reg_access_seq|uvm_reg_mem_access_seq|uvm_reg_single_bit_bash_seq|uvm_reg_bit_bash_seq|uvm_reg_hw_reset_seq|uvm_reg_mem_built_in_seq|uvm_reg_mem_hdl_paths_seq|uvm_reg_shared_access_seq|uvm_mem_shared_access_seq|uvm_reg_mem_shared_access_seq|uvm_mem|uvm_mem_mam|uvm_mem_region|uvm_mem_mam_policy|uvm_mem_mam_cfg|uvm_reg|uvm_reg_adapter|uvm_reg_tlm_adapter|uvm_reg_backdoor|uvm_reg_block|uvm_reg_cbs|uvm_reg_read_only_cbs|uvm_reg_write_only_cbs|uvm_reg_field|uvm_reg_fifo|uvm_reg_file|uvm_reg_indirect_data|uvm_reg_indirect_ftdr_seq|uvm_reg_item|uvm_reg_map_info|uvm_reg_transaction_order_policy|uvm_reg_map|uvm_hdl_path_concat|uvm_predict_s|uvm_reg_predictor|uvm_reg_sequence|uvm_reg_frontdoor|uvm_vreg|uvm_vreg_cbs|uvm_vreg_field|uvm_vreg_field_cbs|uvm_push_sequencer|uvm_sequence|uvm_sequencer|uvm_sequencer_analysis_fifo|uvm_sequence_process_wrapper|uvm_sequencer_base|uvm_sequence_request|uvm_sequencer_param_base|uvm_sequence_base|uvm_random_sequence|uvm_exhaustive_sequence|uvm_simple_sequence|uvm_sequence_item|uvm_sequence_library|uvm_sequence_library_cfg|uvm_analysis_port|uvm_analysis_imp|uvm_analysis_export|uvm_blocking_put_export|uvm_nonblocking_put_export|uvm_put_export|uvm_blocking_get_export|uvm_nonblocking_get_export|uvm_get_export|uvm_blocking_peek_export|uvm_nonblocking_peek_export|uvm_peek_export|uvm_blocking_get_peek_export|uvm_nonblocking_get_peek_export|uvm_get_peek_export|uvm_blocking_master_export|uvm_nonblocking_master_export|uvm_master_export|uvm_blocking_slave_export|uvm_nonblocking_slave_export|uvm_slave_export|uvm_blocking_transport_export|uvm_nonblocking_transport_export|uvm_transport_export|uvm_blocking_put_imp|uvm_nonblocking_put_imp|uvm_put_imp|uvm_blocking_get_imp|uvm_nonblocking_get_imp|uvm_get_imp|uvm_blocking_peek_imp|uvm_nonblocking_peek_imp|uvm_peek_imp|uvm_blocking_get_peek_imp|uvm_nonblocking_get_peek_imp|uvm_get_peek_imp|uvm_blocking_master_imp|uvm_nonblocking_master_imp|uvm_master_imp|uvm_blocking_slave_imp|uvm_nonblocking_slave_imp|uvm_slave_imp|uvm_blocking_transport_imp|uvm_nonblocking_transport_imp|uvm_transport_imp|uvm_blocking_put_port|uvm_nonblocking_put_port|uvm_put_port|uvm_blocking_get_port|uvm_nonblocking_get_port|uvm_get_port|uvm_blocking_peek_port|uvm_nonblocking_peek_port|uvm_peek_port|uvm_blocking_get_peek_port|uvm_nonblocking_get_peek_port|uvm_get_peek_port|uvm_blocking_master_port|uvm_nonblocking_master_port|uvm_master_port|uvm_blocking_slave_port|uvm_nonblocking_slave_port|uvm_slave_port|uvm_blocking_transport_port|uvm_nonblocking_transport_port|uvm_transport_port|uvm_seq_item_pull_port|uvm_seq_item_pull_export|uvm_seq_item_pull_imp|uvm_sqr_if_base|uvm_tlm_fifo|uvm_tlm_analysis_fifo|uvm_tlm_event|uvm_tlm_fifo_base|uvm_tlm_if_base|uvm_tlm_req_rsp_channel|uvm_tlm_transport_channel|uvm_tlm_b_transport_export|uvm_tlm_nb_transport_fw_export|uvm_tlm_nb_transport_bw_export|uvm_tlm_generic_payload|uvm_tlm_extension_base|uvm_tlm_extension|uvm_tlm_if|uvm_tlm_b_transport_imp|uvm_tlm_nb_transport_fw_imp|uvm_tlm_nb_transport_bw_imp|uvm_tlm_b_transport_port|uvm_tlm_nb_transport_fw_port|uvm_tlm_nb_transport_bw_port|uvm_tlm_b_initiator_socket|uvm_tlm_b_target_socket|uvm_tlm_nb_initiator_socket|uvm_tlm_nb_target_socket|uvm_tlm_b_passthrough_initiator_socket|uvm_tlm_b_passthrough_target_socket|uvm_tlm_nb_passthrough_initiator_socket|uvm_tlm_nb_passthrough_target_socket|uvm_tlm_b_target_socket_base|uvm_tlm_b_initiator_socket_base|uvm_tlm_nb_target_socket_base|uvm_tlm_nb_initiator_socket_base|uvm_tlm_nb_passthrough_initiator_socket_base|uvm_tlm_nb_passthrough_target_socket_base|uvm_tlm_b_passthrough_initiator_socket_base|uvm_tlm_b_passthrough_target_socket_base|uvm_tlm_time)\\b"
+            },
+            {
+                "name": "support.class.uvm.sv",
+                "match": "\\b(uvm_blocking_put_imp|uvm_nonblocking_put_imp|uvm_put_imp|uvm_blocking_get_imp|uvm_nonblocking_get_imp|uvm_get_imp|uvm_blocking_peek_imp|uvm_nonblocking_peek_imp|uvm_peek_imp|uvm_blocking_get_peek_imp|uvm_nonblocking_get_peek_imp|uvm_get_peek_imp|uvm_blocking_master_imp|uvm_nonblocking_master_imp|uvm_master_imp|uvm_blocking_slave_imp|uvm_nonblocking_slave_imp|uvm_slave_imp|uvm_blocking_transport_imp|uvm_nonblocking_transport_imp|uvm_transport_imp|uvm_analysis_imp)[\\w\\$_]+\\b"
+            }
+        ]
+    },
+    "uvm_method": {
+        "patterns": [
+            {
+                "name": "support.function.uvm.sv",
+                "match": "\\b(accept|accept_tr|add|add_by_name|add_callback|add_coverage|add_hdl_path|add_hdl_path_slice|add_int|add_mem|add_object|add_path|add_reg|add_sequence|add_sequences|add_slice|add_string|add_submap|add_typewide_sequence|add_typewide_sequences|add_uvm_phases|adjust_name|all_dropped|allocate|apply_config_settings|b_transport|backdoor|backdoor_read|backdoor_read_func|backdoor_watch|backdoor_write|begin_child_tr|begin_tr|begin_v|body|build_coverage|build_phase|burst_read|burst_write|bus2reg|callback_mode|can_get|can_peek|can_put|cancel|capacity|catch|check_config_usage|check_data_width|check_phase|clear|clear_extension|clear_extensions|clear_hdl_path|clear_response_queue|clone|close|close_db|compare|compare_field|compare_field_int|compare_field_real|compare_object|compare_string|compose_report_message|configure|configure_phase|connect|Connect|connect_phase|convert2string|copy|create|create_component|create_component_by_name|create_component_by_type|create_item|create_map|create_object|create_object_by_name|create_object_by_type|current_grabber|debug_connected_to|debug_create_by_name|debug_create_by_type|debug_provided_to|decode|decr|define_access|define_domain|delete|delete_by_name|delete_callback|delete_elements|die|disable_auto_item_recording|disable_recording|display|display_objections|do_accept_tr|do_begin_tr|do_block|do_bus_read|do_bus_write|do_close|do_close_db|do_compare|do_copy|do_end_tr|do_establish_link|do_free|do_get_lhs|do_get_rhs|do_kill|do_open|do_open_db|do_open_recorder|do_open_stream|do_pack|do_post_read|do_post_write|do_pre_read|do_pre_write|do_predict|do_print|do_read|do_record|do_record_field|do_record_field_int|do_record_field_real|do_record_generic|do_record_object|do_record_string|do_record_time|do_reg_item|do_set_lhs|do_set_rhs|do_unpack|do_write|drop_objection|dropped|dump|emit|enable_recording|encode|end_of_elaboration_phase|end_prematurely|end_tr|end_v|establish_link|exec_func|exec_task|execute|execute_item|execute_report_message|exists|extract_phase|final_phase|find|find_all|find_block|find_blocks|find_by_name|find_override_by_name|find_override_by_type|find_unused_resources|find_wrapper_by_name|finish_item|first|flush|for_each|format_action|format_footer|format_header|format_row|free|free_tr_stream|from_name)\\b(?=\\s*[\\(|;])"
+            },
+            {
+                "name": "support.function.uvm.sv",
+                "match": "\\b(generate_stimulus|get|get_abstime|get_accept_time|get_access|get_action|get_adapter|get_addr_unit_bytes|get_address|get_addresses|get_adjacent_predecessor_nodes|get_adjacent_successor_nodes|get_arbitration|get_arg_matches|get_arg_value|get_arg_values|get_args|get_auto_predict|get_automatic_phase_objection|get_backdoor|get_base_addr|get_begin_time|get_block_by_name|get_blocks|get_by_name|get_by_type|get_byte_enable|get_byte_enable_length|get_cb|get_check_on_read|get_child|get_children|get_client|get_close_time|get_command|get_common_domain|get_comp|get_compare|get_component_visitor|get_config|get_connected_to|get_context|get_coverage|get_current_item|get_data|get_data_length|get_db|get_default_hdl_path|get_default_path|get_default_tr_database|get_depth|get_domain|get_domain_name|get_domains|get_drain_time|get_element_container|get_elements|get_end_offset|get_end_time|get_event_pool|get_extension|get_factory|get_field_by_name|get_fields|get_file|get_filename|get_first|get_first_child|get_fname|get_frontdoor|get_full_hdl_path|get_full_name|get_global|get_global_pool|get_global_queue|get_handle|get_hdl_path|get_hdl_path_kinds|get_highest_precedence|get_id|get_id_count|get_id_set|get_if|get_immediate_children|get_imp|get_incr|get_initiator|get_inst|get_inst_count|get_inst_id|get_is_active|get_item|get_jump_target|get_last|get_len|get_lhs|get_line|get_link|get_lsb_pos|get_lsb_pos_in_register|get_map_by_name|get_maps|get_max_quit_count|get_max_size|get_mem_by_name|get_mem_by_offset|get_memories|get_memory|get_message|get_message_database|get_mirrored_value|get_n_bits|get_n_bytes|get_n_maps|get_n_memlocs|get_name|get_name_constraint|get_next|get_next_child|get_next_item|get_num_children|get_num_extensions|get_num_last_reqs|get_num_last_rsps|get_num_reqs_sent|get_num_rsps_received|get_num_waiters|get_object_type|get_objection|get_objection_count|get_objection_total|get_objectors|get_offset|get_offset_in_memory|get_open_time|get_packed_size|get_parent|get_parent_map|get_parent_sequence|get_phase_type|get_physical_addresses|get_plusargs|get_port|get_prev|get_prev_state|get_priority|get_propagate_mode|get_provided_to|get_quit_count|get_radix_str|get_realtime|get_record_attribute_handle|get_recorder_from_handle|get_recorders|get_reg_by_name|get_reg_by_offset|get_regfile|get_region|get_registers|get_report_action|get_report_catcher|get_report_file_handle|get_report_handler|get_report_max_verbosity_level|get_report_object|get_report_server|get_report_verbosity_level|get_reset|get_response|get_response_queue_depth|get_response_queue_error_report_disabled|get_response_status|get_response_string|get_rhs|get_rights|get_root|get_root_blocks|get_root_map|get_root_sequence|get_root_sequence_name|get_run_count|get_schedule|get_schedule_name|get_scope|get_sequence_id|get_sequence_path|get_sequence_state|get_sequencer|get_sequences|get_server|get_severity|get_severity_count|get_severity_set|get_size|get_start_offset|get_starting_phase|get_state|get_stream|get_stream_from_handle|get_stream_type_name|get_streaming_width|get_streams|get_submap_offset|get_submaps|get_threshold|get_tool_name|get_tool_version|get_tr_handle|get_tr_stream|get_transaction_id|get_transaction_order_policy|get_trigger_data|get_trigger_time|get_type|get_type_handle|get_type_handle_name|get_type_name|get_use_response_handler|get_use_sequence_info|get_uvm_domain|get_uvm_schedule|get_uvmargs|get_value|get_verbosity|get_vfield_by_name|get_virtual_fields|get_virtual_registers|get_vreg_by_name|get_vreg_by_offset|grab)\\b(?=\\s*[\\(|;])"
+            },
+            {
+                "name": "support.function.uvm.sv",
+                "match": "\\b(has_child|has_coverage|has_do_available|has_hdl_path|has_lock|has_reset|ID|implement|include_coverage|incr|incr_id_count|incr_quit_count|incr_severity_count|init_access_record|init_sequence_library|insert|is|is_active|is_after|is_auditing|is_auto_item_recording_enabled|is_auto_updated|is_before|is_blocked|is_busy|is_child|is_closed|is_dmi_allowed|is_empty|is_enabled|is_export|is_full|is_grabbed|is_hdl_path_root|is_imp|is_in_map|is_indv_accessible|is_item|is_known_access|is_locked|is_null|is_off|is_on|is_open|is_port|is_quit_count_reached|is_read|is_read_only|is_recording_enabled|is_relevant|is_response_error|is_response_ok|is_tracing|is_unbounded|is_volatile|is_write|issue|item_done|jump|jump_to|kill|last|last_req|last_rsp|lock|lock_model|lookup|lookup_name|lookup_regex|lookup_regex_names|lookup_scope|lookup_type|main_phase|match_scope|max_size|mid_do|min_size|mirror|mirror_reg|nb_transport|nb_transport_bw|nb_transport_fw|needs_update|new|new_report_message|next|num|open_db|open_recorder|open_stream|order)\\b(?=\\s*[\\(|;])"
+            },
+            {
+                "name": "support.function.uvm.sv",
+                "match": "\\b(pack|pack_bits|pack_bytes|pack_field|pack_field_int|pack_ints|pack_object|pack_real|pack_string|pack_time|peek|peek_mem|peek_reg|phase_ended|phase_ready_to_end|phase_started|phase_state_change|poke|poke_mem|poke_reg|pop_back|pop_front|post_body|post_configure_phase|post_do|post_main_phase|post_predict|post_randomize|post_read|post_reset_phase|post_shutdown_phase|post_start|post_trigger|post_write|pre_abort|pre_body|pre_configure_phase|pre_do|pre_main_phase|pre_predict|pre_randomize|pre_read|pre_reset_phase|pre_shutdown_phase|pre_start|pre_trigger|pre_write|predict|prev|print|print_accessors|print_array_footer|print_array_header|print_array_range|print_catcher|print_config|print_config_settings|print_config_with_audit|print_field|print_field_int|print_generic|print_msg|print_object|print_override_info|print_real|print_resources|print_string|print_time|print_topology|process_report_message|push_back|push_front|put|put_response|raise_objection|raised|read|read_by_name|read_by_type|read_func|read_mem|read_mem_by_name|read_reg|read_reg_by_name|reconfigure|record|record_error_tr|record_event_tr|record_field|record_field_int|record_field_real|record_generic|record_object|record_read_access|record_string|record_time|record_write_access|reg2bus|register|release_all_regions|release_region|remove|remove_sequence|report_phase|report_summarize|request_region|reseed|reserve_region|reset|reset_blk|reset_phase|reset_quit_count|reset_report_handler|reset_severity_counts|resolve_bindings|response_handler|resume|run_phase|run_test)\\b(?=\\s*[\\(|;])"
+            },
+            {
+                "name": "support.function.uvm.sv",
+                "match": "\\b(sample|sample_values|select_sequence|send_request|set|set_priority|set_abstime|set_access|set_action|set_address|set_anonymous|set_arbitration|set_auto_predict|set_auto_reset|set_automatic_phase_objection|set_backdoor|set_base_addr|set_byte_enable|set_byte_enable_length|set_check_on_read|set_command|set_compare|set_component_visitor|set_context|set_coverage|set_data|set_data_length|set_default|set_default_hdl_path|set_default_index|set_default_map|set_default_tr_database|set_depth|set_dmi_allowed|set_domain|set_drain_time|set_extension|set_factory|set_file|set_file_name|set_filename|set_frontdoor|set_hdl_path_root|set_heartbeat|set_id|set_id_count|set_id_info|set_initiator|set_inst_override|set_inst_override_by_name|set_inst_override_by_type|set_int_local|set_item_context|set_jump_phase|set_lhs|set_line|set_max_quit_count|set_max_zero_time_wait_relevant_count|set_message|set_message_database|set_mode|set_name|set_name_override|set_num_last_reqs|set_num_last_rsps|set_object_local|set_offset|set_override|set_parent_sequence|set_phase_imp|set_priority|set_priority_name|set_priority_type|set_propagate_mode|set_quit_count|set_read|set_read_only|set_report_default_file|set_report_default_file_hier|set_report_handler|set_report_id_action|set_report_id_action_hier|set_report_id_file|set_report_id_file_hier|set_report_id_verbosity|set_report_id_verbosity_hier|set_report_message|set_report_object|set_report_server|set_report_severity_action|set_report_severity_action_hier|set_report_severity_file|set_report_severity_file_hier|set_report_severity_id_action|set_report_severity_id_action_hier|set_report_severity_id_file|set_report_severity_id_file_hier|set_report_severity_id_override|set_report_severity_id_verbosity|set_report_severity_id_verbosity_hier|set_report_severity_override|set_report_verbosity_level|set_report_verbosity_level_hier|set_reset|set_response_queue_depth|set_response_queue_error_report_disabled|set_response_status|set_rhs|set_scope|set_sequencer|set_server|set_severity|set_severity_count|set_starting_phase|set_streaming_width|set_string_local|set_submap_offset|set_threshold|set_time_resolution|set_timeout|set_transaction_id|set_transaction_order_policy|set_type_override|set_type_override_by_name|set_type_override_by_type|set_use_sequence_info|set_value|set_verbosity|set_volatility|set_write|shutdown_phase|size|sort_by_precedence|spell_check|sprint|start|start_item|start_of_simulation_phase|start_phase_sequence|stop|stop_phase_sequence|stop_sequences|stop_stimulus_generation|summarize|suspend|sync)\\b(?=\\s*[\\(|;])"
+            },
+            {
+                "name": "support.function.uvm.sv",
+                "match": "\\b(trace_mode|transport|traverse|trigger|try_get|try_next_item|try_peek|try_put|try_set|turn_off_auditing|turn_off_tracing|turn_on_auditing|turn_on_tracing|ungrab|unlock|unpack|unpack_bits|unpack_bytes|unpack_field|unpack_field_int|unpack_ints|unpack_object|unpack_real|unpack_string|unpack_time|unsync|update|update_reg|use_record_attribute|use_response_handler|used|user_priority_arbitration|uvm_bits_to_string|uvm_get_report_object|uvm_hdl_check_path|uvm_hdl_deposit|uvm_hdl_force|uvm_hdl_force_time|uvm_hdl_read|uvm_hdl_release|uvm_hdl_release_and_read|uvm_is_match|uvm_process_report_message|uvm_report|uvm_report_enabled|uvm_report_error|uvm_report_fatal|uvm_report_info|uvm_report_warning|uvm_split_string|uvm_string_to_bits|uvm_wait_for_nba_region|visit|wait_for|wait_for_change|wait_for_grant|wait_for_item_done|wait_for_relevant|wait_for_sequence_state|wait_for_sequences|wait_for_state|wait_modified|wait_off|wait_on|wait_ptrigger|wait_ptrigger_data|wait_trigger|wait_trigger_data|write|write_attribute|write_attribute_int|write_by_name|write_by_type|write_mem|write_mem_by_name|write_reg|write_reg_by_name)\\b(?=\\s*[\\(|;])"
+            }
+        ]
+    },
+    "uvm_type": {
+        "name": "support.type.uvm.sv",
+        "match": "\\b(alloc_mode_e|locality_e|uvm_access_e|uvm_action|uvm_active_passive_enum|uvm_bitstream_t|uvm_check_e|uvm_coverage_model_e|uvm_elem_kind_e|uvm_endianness_e|uvm_hdl_path_slice|uvm_hier_e|uvm_integral_t|uvm_mem_cb|uvm_mem_cb_iter|uvm_objection_event|uvm_path_e|uvm_phase_state|uvm_phase_type|uvm_port_type_e|uvm_predict_e|uvm_radix_enum|uvm_recursion_policy_enum|uvm_reg_addr_logic_t|uvm_reg_addr_t|uvm_reg_bd_cb|uvm_reg_bd_cb_iter|uvm_reg_byte_en_t|uvm_reg_cb|uvm_reg_cb_iter|uvm_reg_cvr_t|uvm_reg_data_logic_t|uvm_reg_data_t|uvm_reg_field_cb|uvm_reg_field_cb_iter|uvm_reg_mem_tests_e|uvm_sequence_lib_mode|uvm_sequence_state_enum|uvm_sequencer_arb_mode|uvm_severity|uvm_status_e|uvm_tlm_command_e|uvm_tlm_phase_e|uvm_tlm_response_status_e|uvm_tlm_sync_e|uvm_verbosity|uvm_vreg_cb|uvm_vreg_cb_iter|uvm_vreg_field_cb|uvm_vreg_field_cb_iter|uvm_wait_op)\\b"
+    },
+    "uvm_constant": {
+        "name": "support.constant.uvm.sv",
+        "match": "\\b(ACK|ADDRESS|ADDR_PH|ADDR_PH_ERROR|ARBI|BEGIN_REQ|BEGIN_RESP|BLK_RD|BLK_WR|BROAD|BUS_READ|BUS_WRITE|BYTE|CAUGHT|CLASSIC|CLR|CONSTANT|DATA_PH|DEC|DECR|DWORD|END_REQ|END_RESP|EOB|ERR|GREEDY|IN|INC|INCR|LINEAR|LOCAL|NAK|NAME_OVERRIDE|NEARBY|NOP|NO_OP|NO_RESPONSE|NYET|ONES|OUT|PRI_HIGH|PRI_LOW|QWORD|READ|REGISTERED|RESPONSE_AP|RESPONSE_SEQ_PORT|RMW|RST_START|RST_STOP|RTY|RX_ISR|SEQ_TYPE_GRAB|SEQ_TYPE_LOCK|SEQ_TYPE_REQ|STALL|STATUS_NOT_OK|STATUS_OK|THRIFTY|THROW|TIMEOUT|TX_ISR|TYPE_OVERRIDE|UNINITIALIZED_PHASE|UNKNOWN|UNKNOWNS|UNKNOWN_ACTION|UPSTREAM|USB_TLM_DATA|USB_TLM_HANDSHAKE|USB_TLM_TOKEN|UVM_ACTIVE|UVM_ALL_ACTIVE|UVM_ALL_DROPPED|UVM_ANY_ACTIVE|UVM_APPEND|UVM_BACKDOOR|UVM_BIG_ENDIAN|UVM_BIG_FIFO|UVM_BIN|UVM_BODY|UVM_BURST_READ|UVM_BURST_WRITE|UVM_CALL_HOOK|UVM_CHECK|UVM_COUNT|UVM_CREATED|UVM_CVR_ADDR_MAP|UVM_CVR_ALL|UVM_CVR_FIELD_VALS|UVM_CVR_REG_BITS|UVM_DEBUG|UVM_DEC|UVM_DEEP|UVM_DEFAULT_PATH|UVM_DEFAULT_POLICY|UVM_DISPLAY|UVM_DO_ALL_REG_MEM_TESTS|UVM_DO_MEM_ACCESS|UVM_DO_MEM_WALK|UVM_DO_REG_ACCESS|UVM_DO_REG_BIT_BASH|UVM_DO_REG_HW_RESET|UVM_DO_SHARED_ACCESS|UVM_DROPPED|UVM_ENDED|UVM_ENUM|UVM_EQ|UVM_ERROR|UVM_EXIT|UVM_EXPORT|UVM_FATAL|UVM_FIELD|UVM_FINISHED|UVM_FRONTDOOR|UVM_FULL|UVM_GT|UVM_GTE|UVM_HAS_X|UVM_HEX|UVM_HIER|UVM_HIGH|UVM_IMPLEMENTATION|UVM_INFO|UVM_IS_OK|UVM_LITTLE_ENDIAN|UVM_LITTLE_FIFO|UVM_LOG|UVM_LOW|UVM_LT|UVM_LTE|UVM_MEDIUM|UVM_MEM|UVM_NE|UVM_NONE|UVM_NORADIX|UVM_NOT_OK|UVM_NO_ACTION|UVM_NO_CHECK|UVM_NO_COVERAGE|UVM_NO_ENDIAN|UVM_NO_HB_MODE|UVM_NO_HIER|UVM_OCT|UVM_ONE_ACTIVE|UVM_PASSIVE|UVM_PHASE_CLEANUP|UVM_PHASE_DOMAIN|UVM_PHASE_DONE|UVM_PHASE_DORMANT|UVM_PHASE_ENDED|UVM_PHASE_EXECUTING|UVM_PHASE_GLOBAL|UVM_PHASE_IMP|UVM_PHASE_JUMPING|UVM_PHASE_NODE|UVM_PHASE_READY_TO_END|UVM_PHASE_SCHEDULE|UVM_PHASE_SCHEDULED|UVM_PHASE_STARTED|UVM_PHASE_SYNCING|UVM_PHASE_TERMINAL|UVM_PHASE_UNINITIALIZED|UVM_PORT|UVM_POST_BODY|UVM_POST_START|UVM_PREDICT|UVM_PREDICT_DIRECT|UVM_PREDICT_READ|UVM_PREDICT_WRITE|UVM_PREPEND|UVM_PRE_BODY|UVM_PRE_START|UVM_RAISED|UVM_READ|UVM_REAL|UVM_REAL_DEC|UVM_REAL_EXP|UVM_REFERENCE|UVM_REG|UVM_RM_RECORD|UVM_SEQ_ARB_FIFO|UVM_SEQ_ARB_RANDOM|UVM_SEQ_ARB_STRICT_FIFO|UVM_SEQ_ARB_STRICT_RANDOM|UVM_SEQ_ARB_USER|UVM_SEQ_ARB_WEIGHTED|UVM_SEQ_LIB_ITEM|UVM_SEQ_LIB_RAND|UVM_SEQ_LIB_RANDC|UVM_SEQ_LIB_USER|UVM_SHALLOW|UVM_STOP|UVM_STOPPED|UVM_STRING|UVM_TIME|UVM_TLM_ACCEPTED|UVM_TLM_ADDRESS_ERROR_RESPONSE|UVM_TLM_BURST_ERROR_RESPONSE|UVM_TLM_BYTE_ENABLE_ERROR_RESPONSE|UVM_TLM_COMMAND_ERROR_RESPONSE|UVM_TLM_COMPLETED|UVM_TLM_GENERIC_ERROR_RESPONSE|UVM_TLM_IGNORE_COMMAND|UVM_TLM_INCOMPLETE_RESPONSE|UVM_TLM_OK_RESPONSE|UVM_TLM_READ_COMMAND|UVM_TLM_UPDATED|UVM_TLM_WRITE_COMMAND|UVM_UNFORMAT2|UVM_UNFORMAT4|UVM_UNSIGNED|UVM_WARNING|UVM_WRITE|VALUE|WORD|WRAP16|WRAP4|WRAP8|WRITE|ZEROES|UVM_MACRO_NUMFLAGS|UVM_DEFAULT|UVM_ALL_ON|UVM_FLAGS_ON|UVM_FLAGS_OFF|UVM_COPY|UVM_NOCOPY|UVM_COMPARE|UVM_NOCOMPARE|UVM_PRINT|UVM_NOPRINT|UVM_RECORD|UVM_NORECORD|UVM_PACK|UVM_NOPACK|UVM_PHYSICAL|UVM_ABSTRACT|UVM_READONLY|UVM_NODEFPRINT|UVM_MACRO_EXTRAS|UVM_FLAGS|UVM_UNPACK|UVM_CHECK_FIELDS|UVM_END_DATA_EXTRA|UVM_START_FUNCS|UVM_SET|UVM_SETINT|UVM_SETOBJ|UVM_SETSTR|UVM_END_FUNCS)\\b"
+    }
+},
+"uuid": "c066a179-35c4-44cb-86a6-b978f630d1f9"

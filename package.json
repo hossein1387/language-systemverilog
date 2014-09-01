@@ -1,0 +1,14 @@
+{
+  "name": "language-systemverilog",
+  "main": "./lib/language-systemverilog",
+  "version": "0.0.0",
+  "description": "A short description of your package",
+  "activationEvents": ["language-systemverilog:toggle"],
+  "repository": "https://github.com/atom/language-systemverilog",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+  }
+}
